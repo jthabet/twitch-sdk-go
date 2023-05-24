@@ -2,7 +2,6 @@
 
 https://github.com/deepmap/oapi-codegen
 
-
 # Tools
 
 Install the oapi-codegen `go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest`
@@ -10,11 +9,20 @@ Install the oapi-codegen `go install github.com/deepmap/oapi-codegen/cmd/oapi-co
 # Example
 
 ```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"net/http"
+)
+
 func main() {
-   	var clientID = ""
+	var clientID = ""
 	var clientSecret = ""
 
-    bearerTokenProvider, err := twitch.NewBearerToken(clientID, clientSecret)
+	bearerTokenProvider, err := twitch.NewBearerToken(clientID, clientSecret)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -28,13 +36,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-    var login = "some login"
+	var login = "some login"
 	resp, err := client.GetUserWithResponse(context.Background(), &twitch.GetUserParams{Login: &login})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-    for _, u := range *resp.JSON200.Data {
+	for _, u := range *resp.JSON200.Data {
 		fmt.Printf("%s\n", *u.DisplayName)
 		r, err := client.GetVideoWithResponse(context.Background(), &twitch.GetVideoParams{UserId: u.Id})
 		if err != nil {
