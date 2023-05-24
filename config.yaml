@@ -1,0 +1,6 @@
+package: twitch
+
+generate:
+  client: true
+  models: true
+  embedded-spec: false

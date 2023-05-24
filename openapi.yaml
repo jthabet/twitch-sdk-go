@@ -1,0 +1,226 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: twitch
+servers:
+  - url: "https://api.twitch.tv/helix"
+paths:
+  /users:
+    parameters:
+      - name: id
+        in: query
+        description: User id
+        schema:
+          type: string
+      - name: login
+        in: query
+        description: User login name.
+        schema:
+          type: string
+    get:
+      parameters:
+        - name: Client-Id
+          in: header
+          schema:
+            type: string
+      tags:
+        - User
+      summary: Get user
+      description: retrieve user info
+      operationId: getUser
+      security:
+        - oAuth2ClientCredentials: []
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "403":
+          description: Forbidden
+        "404":
+          description: User not found
+  /videos:
+    parameters:
+      - name: id
+        in: query
+        description: ID of video.
+        schema:
+          type: string
+      - name: user_id
+        in: query
+        description: ID of user who owns the video.
+        schema:
+          type: string
+      - name: game_id
+        in: query
+        description: ID of the game the video is of.
+        schema:
+          type: string
+      - name: after
+        in: query
+        description: The cursor used to get the next page of results. The Pagination object in the response contains the cursor s value.
+        schema:
+          type: string
+      - name: before
+        in: query
+        description: The cursor used to get the previous page of results. The Pagination object in the response contains the cursor s value.
+        schema:
+          type: string
+    get:
+      parameters:
+        - name: Client-Id
+          in: header
+          schema:
+            type: string
+      summary: Get video
+      operationId: getVideo
+      security:
+        - oAuth2ClientCredentials: []
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoResponse"
+
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+components:
+  securitySchemes:
+    oAuth2ClientCredentials:
+      type: oauth2
+      flows:
+        clientCredentials:
+          tokenUrl: https://id.twitch.tv/oauth2/token
+          scopes: {}
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    User:
+      type: object
+      properties:
+        broadcaster_type:
+          description: User’s broadcaster type partner, affiliate, or empty
+          type: string
+          enum: ["partner", "affiliate", ""]
+        description:
+          description: User's channel description
+          type: string
+        display_name:
+          description: User's display name
+          type: string
+        id:
+          description: User's ID
+          type: string
+        login:
+          description: User's login name
+          type: string
+        offline_image_url:
+          description: URL of the user's offline image
+          type: string
+        profile_image_url:
+          description: URL of the user's profile image
+          type: string
+        type:
+          description: User's type staff, admin, global_mod or empty
+          type: string
+          enum: [staff, admin, global_mod, ""]
+        view_count:
+          type: integer
+          deprecated: true
+        email:
+          type: string
+        created_at:
+          type: string
+    UserResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/User"
+    Video:
+      type: object
+      properties:
+        id:
+          description: ID of the video.
+          type: string
+        stream_id:
+          description: ID of the stream.
+          type: string
+        user_id:
+          description: ID of the user who owns video.
+          type: string
+        user_login:
+          description: Login of the user who owns the video.
+          type: string
+        user_name:
+          description: Display name corresponding to user_id.
+          type: string
+        title:
+          description: Title of the video.
+          type: string
+        description:
+          description: Description of the video.
+          type: string
+        created_at:
+          description: Date when the video was created.
+          type: string
+        published_at:
+          description: Date when the video was published.
+          type: string
+        url:
+          type: string
+        thumbnail_url:
+          type: string
+        viewable:
+          type: string
+        view_count:
+          type: integer
+        language:
+          type: string
+        type:
+          type: string
+        duration:
+          type: string
+        # segments.duration:
+        #   type: integer
+        # segments.offset:
+        #   type: integer
+        segments:
+          $ref: "#/components/schemas/Segments"
+    VideoResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Video"
+        pagination:
+          $ref: "#/components/schemas/Pagination"
+    Pagination:
+      type: object
+      properties:
+        cursor:
+          type: string
+    Segments:
+      type: object
+      properties:
+        duration:
+          type: integer
+        offset:
+          type: integer
+
+security:
+  - oAuth2ClientCredentials: []
+  - bearerAuth: []
